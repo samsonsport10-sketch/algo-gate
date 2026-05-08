@@ -328,6 +328,35 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
   .mode-toggle{display:none;}
 }
 
+/* ── STOCK LISTS ── */
+.lists-section{padding:8px 14px;border-bottom:1px solid var(--border);}
+.lists-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
+.lists-title{font-size:10px;color:var(--text3);letter-spacing:2px;}
+.lists-add-btn{font-size:10px;color:var(--cyan);background:transparent;border:1px solid rgba(0,200,240,0.3);padding:2px 8px;border-radius:4px;cursor:pointer;font-family:'JetBrains Mono',monospace;}
+.list-tabs{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:6px;}
+.list-tab{font-size:10px;font-weight:700;padding:4px 10px;border-radius:6px;border:1px solid var(--border2);background:var(--bg3);color:var(--text2);cursor:pointer;display:flex;align-items:center;gap:4px;transition:all 0.15s;}
+.list-tab.active{border-color:var(--cyan);color:var(--cyan);background:var(--cyanglow);}
+.list-tab .lt-delbtn{background:rgba(240,48,96,0.15);border:1px solid rgba(240,48,96,0.3);color:var(--red);font-size:11px;padding:2px 7px;border-radius:4px;cursor:pointer;margin-left:4px;font-family:'JetBrains Mono',monospace;font-weight:700;flex-shrink:0;}
+.list-tab .lt-delbtn:hover{background:rgba(240,48,96,0.35);}
+.list-actions{display:flex;gap:4px;}
+.list-action-btn{flex:1;font-size:9px;font-weight:700;padding:5px;border-radius:6px;border:1px solid var(--border2);background:var(--bg3);color:var(--text2);cursor:pointer;font-family:'JetBrains Mono',monospace;text-align:center;transition:all 0.15s;}
+.list-action-btn:hover{border-color:var(--cyan);color:var(--cyan);}
+.list-action-btn.load{border-color:rgba(0,212,138,0.4);color:var(--green);background:var(--greenglow);}
+.list-action-btn.save{border-color:rgba(32,96,240,0.4);color:#60a0ff;background:var(--blueglow);}
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px;}
+.modal{background:var(--bg2);border:1px solid var(--border2);border-radius:12px;padding:20px;width:100%;max-width:420px;animation:fadein 0.2s ease;}
+.modal-title{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;color:var(--cyan);margin-bottom:14px;}
+.modal-label{font-size:10px;color:var(--text3);letter-spacing:1px;margin-bottom:5px;}
+.modal input{width:100%;background:var(--bg3);border:1px solid var(--border2);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:12px;padding:8px 10px;border-radius:7px;outline:none;margin-bottom:10px;}
+.modal textarea{width:100%;background:var(--bg3);border:1px solid var(--border2);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:12px;padding:8px 10px;border-radius:7px;outline:none;resize:vertical;min-height:100px;margin-bottom:10px;line-height:1.5;}
+.modal-hint{font-size:10px;color:var(--text3);margin-bottom:12px;line-height:1.6;}
+.modal-btns{display:flex;gap:8px;}
+.modal-btn{flex:1;padding:9px;border-radius:8px;border:none;font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;cursor:pointer;letter-spacing:1px;}
+.modal-btn.confirm{background:linear-gradient(135deg,var(--blue2),var(--blue));color:#fff;}
+.modal-btn.cancel{background:var(--bg3);border:1px solid var(--border2);color:var(--text2);}
+.list-count{font-size:8px;color:var(--text3);background:var(--bg4);padding:1px 5px;border-radius:8px;margin-left:2px;}
+
 /* ── ANIMATIONS ── */
 @keyframes fadein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -393,6 +422,20 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
           <button class="mode-btn day active" id="mobileModeDay" onclick="setMode('day')" style="flex:1;border-radius:6px;font-size:11px;">DAY</button>
           <button class="mode-btn swing" id="mobileModeSwing" onclick="setMode('swing')" style="flex:1;border-radius:6px;font-size:11px;">SWING</button>
           <button class="mode-btn long" id="mobileModeLong" onclick="setMode('long')" style="flex:1;border-radius:6px;font-size:11px;">LONG</button>
+        </div>
+      </div>
+
+      <!-- STOCK LISTS -->
+      <div class="lists-section">
+        <div class="lists-header">
+          <div class="lists-title">📋 STOCK LISTS</div>
+          <button class="lists-add-btn" onclick="showNewListModal()">+ NEW LIST</button>
+        </div>
+        <div class="list-tabs" id="listTabs"></div>
+        <div class="list-actions">
+          <button class="list-action-btn load" onclick="loadActiveList()">⬇ LOAD TO WATCHLIST</button>
+          <button class="list-action-btn save" onclick="saveToActiveList()">⬆ SAVE WATCHLIST</button>
+          <button class="list-action-btn" onclick="showEditListModal()">✏ EDIT</button>
         </div>
       </div>
 
@@ -481,6 +524,22 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
   </div>
 </div>
 
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay" style="display:none" onclick="closeModal(event)">
+  <div class="modal" id="modalBox">
+    <div class="modal-title" id="modalTitle">NEW LIST</div>
+    <div class="modal-label">LIST NAME</div>
+    <input type="text" id="modalName" placeholder="e.g. My Day Trades, Semiconductors, Watchlist A..."/>
+    <div class="modal-label">TICKERS <span style="color:var(--text3)">(one per line OR comma separated)</span></div>
+    <textarea id="modalTickers" placeholder="NVDA&#10;TSLA&#10;AAPL&#10;AMD&#10;&#10;or: NVDA, TSLA, AAPL, AMD"></textarea>
+    <div class="modal-hint">💡 Tip: You can paste a list of tickers from any source. The bot will clean them up automatically.</div>
+    <div class="modal-btns">
+      <button class="modal-btn confirm" id="modalConfirmBtn" onclick="confirmModal()">SAVE LIST</button>
+      <button class="modal-btn cancel" onclick="closeModalDirect()">CANCEL</button>
+    </div>
+  </div>
+</div>
+
 <script>
 // ══════════════════════════════════════════════════════════════
 // ALGO-GATE V7 — FULL PROFESSIONAL RESEARCH TERMINAL
@@ -495,6 +554,165 @@ const MACRO_GOOD=['rate cut','ceasefire','peace','trade deal','gdp growth','bull
 
 let tickers=[],results={},statuses={},stockNews={},marketNews=[],earningsData={};
 let scanning=false,apiKey='',tradeMode='day',accountSize=10000,activeTab='scan';
+let stockLists={},activeListId=null,modalMode='new';
+
+// ── STOCK LISTS ───────────────────────────────────────────────
+function saveLists(){
+  try{localStorage.setItem('ag7_lists',JSON.stringify(stockLists));localStorage.setItem('ag7_activeList',activeListId||'');}catch(e){}
+}
+function loadLists(){
+  try{
+    const l=localStorage.getItem('ag7_lists');
+    if(l) stockLists=JSON.parse(l);
+    const a=localStorage.getItem('ag7_activeList');
+    if(a&&stockLists[a]) activeListId=a;
+    // Add default lists if none exist
+    if(!Object.keys(stockLists).length){
+      stockLists={
+        'list_1':{name:'🔥 Day Trades',tickers:['SPY','QQQ','NVDA','TSLA','AMD']},
+        'list_2':{name:'💎 Swing Trades',tickers:['AAPL','MSFT','GOOGL','META','AMZN']},
+        'list_3':{name:'🚀 High Beta',tickers:['PLTR','COIN','MSTR','RIOT','MARA']},
+      };
+      activeListId='list_1';
+      saveLists();
+    }
+  }catch(e){
+    stockLists={'list_1':{name:'🔥 My Watchlist',tickers:['NVDA','TSLA','AAPL','SPY','AMD']}};
+    activeListId='list_1';
+  }
+}
+
+function renderListTabs(){
+  const wrap=document.getElementById('listTabs');
+  if(!wrap)return;
+  const keys=Object.keys(stockLists);
+  if(!keys.length){wrap.innerHTML='<div style="font-size:10px;color:var(--text3)">No lists yet — click + NEW LIST</div>';return;}
+  wrap.innerHTML=keys.map(id=>{
+    const l=stockLists[id];
+    const isActive=id===activeListId;
+    const cnt=l.tickers?.length||0;
+    return`<div class="list-tab ${isActive?'active':''}" data-listid="${id}">
+      <span class="lt-name">${l.name}</span>
+      <span class="list-count">${cnt}</span>
+      <button class="lt-delbtn" data-delid="${id}">🗑</button>
+    </div>`;
+  }).join('');
+
+  // Attach events after rendering
+  wrap.querySelectorAll('.list-tab').forEach(el=>{
+    el.addEventListener('click', function(e){
+      if(e.target.classList.contains('lt-delbtn')) return;
+      selectList(this.dataset.listid);
+    });
+  });
+  wrap.querySelectorAll('.lt-delbtn').forEach(btn=>{
+    btn.addEventListener('click', function(e){
+      e.stopPropagation();
+      deleteList(this.dataset.delid);
+    });
+  });
+}
+
+function selectList(id){
+  activeListId=id;
+  saveLists();
+  renderListTabs();
+}
+
+function loadActiveList(){
+  if(!activeListId||!stockLists[activeListId])return;
+  const list=stockLists[activeListId];
+  if(!list.tickers?.length){alert('This list is empty! Edit it first.');return;}
+  tickers=[...list.tickers];
+  results={};statuses={};stockNews={};earningsData={};
+  renderChips();renderResults();updateScanBtn();savePrefs();
+  // Flash feedback
+  const btn=document.querySelector('.list-action-btn.load');
+  const orig=btn.textContent;
+  btn.textContent='✓ LOADED!';
+  btn.style.color='var(--green)';
+  setTimeout(()=>{btn.textContent=orig;btn.style.color='';},1500);
+}
+
+function saveToActiveList(){
+  if(!tickers.length){alert('Your watchlist is empty!');return;}
+  if(!activeListId){showNewListModal();return;}
+  stockLists[activeListId].tickers=[...tickers];
+  saveLists();
+  renderListTabs();
+  const btn=document.querySelector('.list-action-btn.save');
+  const orig=btn.textContent;
+  btn.textContent='✓ SAVED!';
+  setTimeout(()=>{btn.textContent=orig;},1500);
+}
+
+function deleteList(id){
+  if(Object.keys(stockLists).length<=1){alert('You need at least one list!');return;}
+  if(!confirm(`Delete "${stockLists[id]?.name}"?`))return;
+  delete stockLists[id];
+  if(activeListId===id) activeListId=Object.keys(stockLists)[0];
+  saveLists();
+  renderListTabs();
+}
+
+// ── MODAL ─────────────────────────────────────────────────────
+function showNewListModal(){
+  modalMode='new';
+  document.getElementById('modalTitle').textContent='NEW STOCK LIST';
+  document.getElementById('modalName').value='';
+  document.getElementById('modalTickers').value='';
+  document.getElementById('modalConfirmBtn').textContent='CREATE LIST';
+  document.getElementById('modalOverlay').style.display='flex';
+  setTimeout(()=>document.getElementById('modalName').focus(),100);
+}
+
+function showEditListModal(){
+  if(!activeListId||!stockLists[activeListId]){alert('Select a list first!');return;}
+  modalMode='edit';
+  const l=stockLists[activeListId];
+  document.getElementById('modalTitle').textContent='EDIT LIST';
+  document.getElementById('modalName').value=l.name;
+  document.getElementById('modalTickers').value=(l.tickers||[]).join('\n');
+  document.getElementById('modalConfirmBtn').textContent='SAVE CHANGES';
+  document.getElementById('modalOverlay').style.display='flex';
+  setTimeout(()=>document.getElementById('modalName').focus(),100);
+}
+
+function confirmModal(){
+  const name=document.getElementById('modalName').value.trim();
+  const raw=document.getElementById('modalTickers').value;
+  if(!name){alert('Please enter a list name!');return;}
+
+  // Parse tickers — handle comma, space, newline separated
+  const parsed=raw.split(/[\n,\s]+/)
+    .map(t=>t.toUpperCase().replace(/[^A-Z]/g,''))
+    .filter(t=>t.length>=1&&t.length<=6);
+
+  const unique=[...new Set(parsed)];
+
+  if(modalMode==='new'){
+    const id='list_'+Date.now();
+    stockLists[id]={name,tickers:unique};
+    activeListId=id;
+  } else {
+    stockLists[activeListId].name=name;
+    stockLists[activeListId].tickers=unique;
+  }
+
+  saveLists();
+  renderListTabs();
+  closeModalDirect();
+
+  // Auto-load if user added tickers
+  if(unique.length>0&&confirm(`Load "${name}" (${unique.length} tickers) into watchlist now?`)){
+    tickers=[...unique];
+    results={};statuses={};stockNews={};earningsData={};
+    renderChips();renderResults();updateScanBtn();savePrefs();
+  }
+}
+
+function closeModal(e){if(e.target===document.getElementById('modalOverlay'))closeModalDirect();}
+function closeModalDirect(){document.getElementById('modalOverlay').style.display='none';}
 
 // ── PERSISTENCE ──────────────────────────────────────────────
 function savePrefs(){
@@ -1164,8 +1382,10 @@ function checkMobile(){
 window.addEventListener('resize',checkMobile);checkMobile();
 
 // ── INIT ──────────────────────────────────────────────────────
+loadLists();
 loadPrefs();
 setMode(tradeMode);
+renderListTabs();
 renderChips();
 updateScanBtn();
 </script>
